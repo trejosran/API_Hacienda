@@ -6,6 +6,7 @@ RUN sed -i 's/deb.debian.org/archive.debian.org/g; s|security.debian.org/debian-
 RUN apt-get update -o Acquire::Check-Valid-Until=false && apt-get -y install libpng-dev curl libcurl4-openssl-dev openssl netcat
 RUN docker-php-ext-install pdo pdo_mysql mysqli gd curl
 RUN a2enmod rewrite
+RUN a2dismod mpm_event mpm_worker >/dev/null 2>&1; a2enmod mpm_prefork
 COPY ./docker-php-apache/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 COPY ./www/ /var/www/html
