@@ -530,7 +530,6 @@ function users_confirmSessionKey()
 
         return $r->idUser;
     }
-    }
 }
 
 /**
