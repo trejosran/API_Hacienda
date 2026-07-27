@@ -510,8 +510,7 @@ function users_confirmSessionKey()
     $q = sprintf("SELECT *
         FROM sessions
         WHERE sessionKey = '%s'
-        AND ip = '%s'
-        AND idUser = '%s'", db_escape(params_get('sessionKey', '')), db_escape($_SERVER['REMOTE_ADDR']), db_escape($user->idUser)
+        AND idUser = '%s'", db_escape(params_get('sessionKey', '')), db_escape($user->idUser)
     );
     $r = db_query($q, 1);
 
