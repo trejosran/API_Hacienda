@@ -519,19 +519,17 @@ function users_confirmSessionKey()
         grace_debug("No results found");
         return false;
     }
-    else
+     else
     {
         # Lets confirm the time frame   
-        if (conf_get('sessionLifetime', 'users') != -1)
+        if (conf_get('sessionLifetime', 'users') != -1 && (time() - $r->lastAccess) > conf_get('sessionLifetime', 'users'))
         {
-            if ((time() - $r->lastAccess) > conf_get('sessionLifetime', 'users'))
-            {
-                grace_debug("User last access is to old");
-                return false;
-            }
-
-            return $r->idUser;
+            grace_debug("User last access is to old");
+            return false;
         }
+
+        return $r->idUser;
+    }
     }
 }
 
