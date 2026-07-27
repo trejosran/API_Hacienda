@@ -67,14 +67,22 @@ function send()
     curl_close($curl);
     if ($err) {
         $arrayResp = array(
-            "Status"    => $status,
+            // OJO: tools_reply() compara este campo contra los strings 'ok'/'error'
+            // literalmente - un codigo HTTP numerico (o vacio) siempre caia en el
+            // caso "default" y se reportaba como error generico. Aqui lo dejamos
+            // explicito para que el mensaje real (el de curl) no se pierda.
+            "Status"    => "error",
             "to"        => $apiTo,
             "text"      => $err
         );
         return $arrayResp;
     } else {
         $arrayResp = array(
-            "Status"    => $status,
+            // Hacienda responde 202 (Accepted) cuando la recepcion fue exitosa y
+            // queda en cola de validacion - no 200. Con el codigo numerico crudo,
+            // tools_reply() nunca lo reconocia como 'ok' y marcaba error aunque
+            // Hacienda hubiera aceptado el comprobante correctamente.
+            "Status"    => ($status >= 200 && $status < 300) ? "ok" : "error",
             "text"      => explode("\n", $respuesta)
         );
         return $arrayResp;
@@ -122,14 +130,14 @@ function sendMensaje()
     curl_close($curl);
     if ($err) {
         $arrayResp = array(
-            "Status"    => $status,
+            "Status"    => "error",
             "to"        => $apiTo,
             "text"      => $err
         );
         return $arrayResp;
     } else {
         $arrayResp = array(
-            "Status"    => $status,
+            "Status"    => ($status >= 200 && $status < 300) ? "ok" : "error",
             "text"      => explode("\n", $respuesta)
         );
         return $arrayResp;
@@ -172,14 +180,14 @@ function sendTE()
     curl_close($curl);
     if ($err) {
         $arrayResp = array(
-            "Status"    => $status,
+            "Status"    => "error",
             "to"        => $apiTo,
             "text"      => $err
         );
         return $arrayResp;
     } else {
         $arrayResp = array(
-            "Status"    => $status,
+            "Status"    => ($status >= 200 && $status < 300) ? "ok" : "error",
             "text"      => explode("\n", $respuesta)
         );
         return $arrayResp;
