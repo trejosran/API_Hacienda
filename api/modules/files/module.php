@@ -69,7 +69,9 @@ function files_init()
         array(
             'r'         => 'filesGetUrl',
             'action'    => 'filesGetUrl',
-            'access'    => "users_openAccess",
+            # Returns the server path of a stored file (e.g. the Hacienda .p12): never public.
+            # filesGetUrl() is still called internally (firmarXML) as a PHP function.
+            'access'    => "users_noAccess",
             'params'    => array(
                 array("key" => "downloadCode", "def" => "", "req" => true)
             )
@@ -82,7 +84,8 @@ function files_init()
         array(
             'r'         => 'upload',
             'action'    => 'files_upload',
-            'access'    => "users_openAccess"
+            # Anonymous uploads let anyone fill the disk; the ERP only uses fileUploader/subir_certif (logged in).
+            'access'    => "users_loggedIn"
         )
     );
 
@@ -137,7 +140,20 @@ function files_createPath($idUser, $type)
  * */
 function files_createDownloadCode($name, $idUser)
 {
-    return md5($name . "//" . time() . $idUser);
+    # The code is the only secret protecting a download: it must not be derivable from the
+    # file name, upload time and user id (that was md5($name//time.$idUser)). Same 32-hex format.
+    return bin2hex(random_bytes(16));
+}
+
+/**
+ * Files that must never be served through the public download route
+ * (Hacienda certificates and signed documents).
+ */
+function files_isPrivateFile($file)
+{
+    $ext = strtolower(pathinfo((string) $file->name, PATHINFO_EXTENSION));
+
+    return $file->type === 'hacienda' || in_array($ext, array('p12', 'pfx', 'xml'), true);
 }
 
 /**
@@ -182,7 +198,8 @@ function files_upload($type = 'attach', $finalName = false, $ext = false, $maxSi
     # Create directory if it does not exist
     if (!file_exists($targetDir))
     {
-        mkdir($targetDir, 0777, true);
+        # Certificates live in a private directory (owner only)
+        mkdir($targetDir, $type === 'hacienda' ? 0700 : 0777, true);
     }
 
     # Set the new name if one was given
@@ -237,6 +254,8 @@ function files_upload($type = 'attach', $finalName = false, $ext = false, $maxSi
     # Try to upload the file
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $targetFile))
     {
+        if ($type === 'hacienda')
+            chmod($targetFile, 0600);
         $downloadCode = files_createDownloadCode($finalName, $user->idUser);
         $idFile = files_Save(
                 array('md5'         => md5($_FILES["fileToUpload"]["tmp_name"]),
@@ -442,7 +461,9 @@ function files_getPublicPath($idFile, $size = false)
 function files_viewPublic()
 {
     $file = files_loadByCode(params_get("code", ""), params_get("size", 0));
-    grace_debug("found file in path: " . $file->path);
+    # Certificates and signed documents are never presented publicly, whatever the code
+    if (is_object($file) && files_isPrivateFile($file))
+        return ERROR_FILES_NOT_FOUND;
     if ($file != ERROR_DB_NO_RESULTS_FOUND)
         files_presentFile($file->path);
 

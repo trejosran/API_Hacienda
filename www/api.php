@@ -21,7 +21,8 @@
  */
 
 error_reporting(E_ALL);
-ini_set("display_errors", 1);
+ini_set("display_errors", 0);
+ini_set("log_errors", 1);
 
 // Cambiamos zona horaria a Costa Rica
 date_default_timezone_set("America/Costa_Rica");
@@ -33,6 +34,31 @@ else
     echo "No se ha encontrado el archivo de configuración. Ve a la carpeta \"www\", renombra el archivo \"settings.php.dist\" a \"settings.php\" y ajusta los valores de configuración.";
     exit;
 }
+
+# Uncaught exceptions (e.g. mysqli_sql_exception) carry SQL fragments and data
+# values in their messages. Log only a sanitized summary and answer with a bare
+# 500, which matches what PHP did before for an uncaught exception.
+set_exception_handler(function ($e) {
+    $text = '[message withheld]';
+    if (function_exists('grace_stripLiterals'))
+        $text = grace_stripLiterals($e->getMessage());
+    error_log(sprintf('Unhandled %s (code %s) at %s:%d: %s', get_class($e), $e->getCode(), basename($e->getFile()), $e->getLine(), $text));
+    if (!headers_sent())
+        http_response_code(500);
+});
+
+# PHP warnings/notices can also embed data values in their text. Log them with
+# the same sanitizer instead of PHP's raw message. Errors silenced with @ or
+# excluded by error_reporting() are ignored, as PHP itself would.
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    if (!(error_reporting() & $errno))
+        return true;
+    $text = '[message withheld]';
+    if (function_exists('grace_stripLiterals'))
+        $text = grace_stripLiterals($errstr);
+    error_log(sprintf('PHP error %d at %s:%d: %s', $errno, basename($errfile), $errline, $text));
+    return true;
+});
 
 $corePath = $config['modules']['coreInstall'];
 if (file_exists($corePath."core/boot.php"))

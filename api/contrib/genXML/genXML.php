@@ -114,18 +114,18 @@ function genXMLFe()
     // Resumen
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
-    grace_debug(params_get("detalles"));
+    grace_debug("param detalles received");
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($mediosPago) && $mediosPago != "") {
-        grace_debug(params_get("medios_pago"));
+        grace_debug("param medios_pago received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -135,15 +135,15 @@ function genXMLFe()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenas) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenas);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && $otrosCargos != "") {
@@ -226,7 +226,7 @@ function genXMLFe()
     if (preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
     $xmlString .= '<Receptor>
@@ -1108,15 +1108,15 @@ function genXMLNC()
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($mediosPago) && $mediosPago != "") {
-        grace_debug(params_get("medios_pago"));
+        grace_debug("param medios_pago received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -1126,15 +1126,15 @@ function genXMLNC()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenas) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenas);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && $otrosCargos != "") {
@@ -1217,7 +1217,7 @@ function genXMLNC()
     if (preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
     if ($omitir_receptor != 'true') {
@@ -1987,15 +1987,15 @@ function genXMLND()
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($mediosPago) && $mediosPago != "") {
-        grace_debug(params_get("medios_pago"));
+        grace_debug("param medios_pago received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -2005,15 +2005,15 @@ function genXMLND()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenas) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenas);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && $otrosCargos != "") {
@@ -2096,7 +2096,7 @@ function genXMLND()
     if (preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
     if ($omitir_receptor != 'true') {
@@ -2865,18 +2865,18 @@ function genXMLTE()
     // Resumen
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
-    grace_debug(params_get("detalles"));
+    grace_debug("param detalles received");
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($mediosPago) && $mediosPago != "") {
-        grace_debug(params_get("medios_pago"));
+        grace_debug("param medios_pago received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -2886,15 +2886,15 @@ function genXMLTE()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenas) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenas);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && $otrosCargos != "") {
@@ -2965,7 +2965,7 @@ function genXMLTE()
     if (preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
     if ($omitir_receptor != 'true') {
@@ -3783,18 +3783,18 @@ function genXMLFec()
     // Resumen
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
-    grace_debug(params_get("detalles"));
+    grace_debug("param detalles received");
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($mediosPago) && $mediosPago != "") {
-        grace_debug(params_get("medios_pago"));
+        grace_debug("param medios_pago received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -3809,15 +3809,15 @@ function genXMLFec()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenas) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenas);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && $otrosCargos != "") {
@@ -3894,7 +3894,7 @@ function genXMLFec()
     if ($emisorEmail != '' && preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
 
@@ -4506,14 +4506,14 @@ function genXMLFee()
     // Resumen
     $totalDesgloseImpuesto = json_decode(params_get("totalDesgloseImpuesto"));
 
-    grace_debug(params_get("detalles"));
+    grace_debug("param detalles received");
 
     if (isset($otrosCargos) && $otrosCargos != "") {
-        grace_debug(params_get("otrosCargos"));
+        grace_debug("param otrosCargos received");
     }
 
     if (isset($totalDesgloseImpuesto) && $totalDesgloseImpuesto != "") {
-        grace_debug(params_get("totalDesgloseImpuesto"));
+        grace_debug("param totalDesgloseImpuesto received");
     }
 
     // Validate string sizes
@@ -4523,15 +4523,15 @@ function genXMLFee()
     }
 
     if (strlen($emisorNombre) > EMISORNOMBREMAXSIZE) {
-        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre: " . $emisorNombre);
+        error_log("emisorNombreSize: " . EMISORNOMBREMAXSIZE . " is greater than emisorNombre (value not logged)");
     }
 
     if (strlen($receptorNombre) > RECEPTORNOMBREMAXSIZE) {
-        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre: " . $receptorNombre);
+        error_log("receptorNombreMaxSize: " . RECEPTORNOMBREMAXSIZE . " is greater than receptorNombre (value not logged)");
     }
 
     if (strlen($receptorOtrasSenasExtranjero) > RECEPTOROTRASSENASMAXSIZE) {
-        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas: " . $receptorOtrasSenasExtranjero);
+        error_log("RECEPTOROTRASSENASEXTRANJEROMAXSIZE: " . RECEPTOROTRASSENASMAXSIZE . " is greater than receptorOtrasSenas (value not logged)");
     }
 
     if (isset($otrosCargos) && !empty($otrosCargos)) {
@@ -4594,7 +4594,7 @@ function genXMLFee()
     if (preg_match(EMAIL_REGEX, trim($emisorEmail))) {
         $xmlString .= '<CorreoElectronico>' . trim($emisorEmail) . '</CorreoElectronico></Emisor>';
     } else {
-        error_log(sprintf("Invalid email format: '%s' does not meet the regex pattern: %s", $emisorEmail, EMAIL_REGEX));
+        error_log(sprintf("Invalid email format (value not logged); does not meet the regex pattern: %s", EMAIL_REGEX));
     }
 
     if (isset($receptorNombre) && $receptorNombre != "") {

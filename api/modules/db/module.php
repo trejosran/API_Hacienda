@@ -58,7 +58,7 @@ function db_allGood()
 
     if ($dbConn->connect_error)
     {
-        grace_error("DB Connection error: " . $dbConn->connect_error);
+        grace_error("DB Connection error " . $dbConn->connect_errno . ": " . grace_stripLiterals($dbConn->connect_error));
         return $dbConn->connect_error;
     }
 
@@ -72,10 +72,7 @@ function db_Connect()
     # Create connection
     grace_debug("config['db']['name']: ");
     grace_debug(conf_get('name', 'db'));
-    grace_debug("config['db']['pwd']: ");
-    grace_debug(conf_get('pwd', 'db'));
-    grace_debug("config['db']['user']: ");
-    grace_debug(conf_get('user', 'db'));
+    # Never log the DB user or password
     grace_debug("config['db']['host']: ");
     grace_debug(conf_get('host', 'db'));
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -83,7 +80,7 @@ function db_Connect()
 
     # Check connection
     if ($dbConn->connect_error)
-        grace_error("Connection failed: " . $dbConn->connect_error);
+        grace_error("Connection failed " . $dbConn->connect_errno . ": " . grace_stripLiterals($dbConn->connect_error));
     else
     {
         $dbConn->set_charset("utf8mb4");
@@ -100,7 +97,8 @@ function db_query($q, $return = 1)
 {
     global $dbConn;
 
-    grace_debug($q);
+    # Log only the statement shape: no literals, so no customer, invoice or credential data
+    grace_debug("SQL: " . grace_stripLiterals($q));
 
     if(db_allGood() === true)
     {
@@ -110,7 +108,7 @@ function db_query($q, $return = 1)
         if ($dbConn->error)
         {
             $result = ERROR_DB_ERROR;
-            grace_error($dbConn->error);
+            grace_error("DB query error " . $dbConn->errno . ": " . grace_stripLiterals($dbConn->error));
         }
         else
         {

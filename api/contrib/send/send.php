@@ -46,7 +46,7 @@ function send()
     }
 
     $mensaje = json_encode($datos);
-    grace_debug("JSON:" . $mensaje);
+    grace_debug("JSON built, " . strlen($mensaje) . " bytes");
 
     $header = array(
         'Authorization: bearer ' . params_get('token'),

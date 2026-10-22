@@ -113,6 +113,9 @@ $config['core']['compannyIMG'] = getenv('corp_url_img');
 
 $config['users']['sessionLifetime'] = getenv('sessionLifetime');
 
+# Secret that must accompany users_register requests; leave the variable unset to keep registration closed
+$config['users']['registerToken'] = getenv('registerToken');
+
 /*******************************************************************************
  * You should not need to touch anything beyond this point
  */

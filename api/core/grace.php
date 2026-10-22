@@ -40,6 +40,69 @@ global $grace_logMsgs;
 /** @} */
 
 /**
+ * Masks credential-like values (passwords, PINs, tokens, session keys, secrets)
+ * in a message before it is written to any log. Messages that are not strings
+ * are returned untouched.
+ */
+function grace_redact($msg)
+{
+    if (!is_string($msg))
+        return $msg;
+
+    $names = 'password|passwd|pwd|pin|client_secret|refresh_token|access_token|id_token|token|sessionKey|secret|cryptoKey|api_?key';
+
+    $rules = array(
+        # INSERT/REPLACE whose column list names a sensitive column: hide the VALUES
+        '/^(\s*(?:INSERT|REPLACE)\b[^(]*\([^)]*\b(?:' . $names . ')\b[^)]*\)\s*VALUES\s*\().*(\)\s*;?\s*)$/is' => '$1***$2',
+        # JSON: "password":"value"
+        '/("(?:' . $names . ')"\s*:\s*)"(?:[^"\\\\]|\\\\.)*"/i' => '$1"***"',
+        # SQL: pwd='value'
+        '/\b(' . $names . ')\b(\s*=\s*)\'(?:[^\'\\\\]|\\\\.)*\'/i' => '$1$2\'***\'',
+        # urlencoded / key=value
+        '/\b(' . $names . ')=([^&\s"\']+)/i' => '$1=***',
+        # Authorization headers
+        '/(bearer\s+)[A-Za-z0-9._~+\/=-]+/i' => '$1***',
+    );
+
+    foreach ($rules as $pattern => $replacement)
+    {
+        $masked = preg_replace($pattern, $replacement, $msg);
+        # Fail closed: if a rule cannot run (e.g. backtrack limit) the original
+        # text is never logged.
+        if ($masked === null)
+            return '[message withheld: could not be sanitized]';
+        $msg = $masked;
+    }
+
+    return $msg;
+}
+
+/**
+ * Removes every quoted literal and number from a SQL statement or a database
+ * error message so it can be logged without data values. Fails closed: if the
+ * text cannot be sanitized nothing from the original is returned.
+ */
+function grace_stripLiterals($text, $maxLen = 300)
+{
+    $patterns = array(
+        "/'(?:[^'\\\\]|\\\\.|'')*'/s",
+        '/"(?:[^"\\\\]|\\\\.|"")*"/s',
+        # A literal cut short by truncation, e.g. "... near 'abc"
+        "/'[^']*$/s",
+        '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i',
+        '/\b\d+(?:\.\d+)?\b/',
+        '/\s+/',
+    );
+    $replacements = array('?', '?', '?', '?', '?', ' ');
+
+    $stripped = preg_replace($patterns, $replacements, (string) $text);
+    if ($stripped === null)
+        return '[unavailable: could not be sanitized]';
+
+    return substr($stripped, 0, $maxLen);
+}
+
+/**
  * I am the one who actually talks
  * DO NOT call me directly, use the other functions
  */
@@ -49,6 +112,16 @@ function _grace_talk($msg, $who = 'info')
 
     if (GRACE_PRINT_ALL)
     {
+        # Never dump structures or large payloads (invoice data, XML, request
+        # bodies) into the log: only short scalar text is kept, then redacted.
+        if (is_array($msg) || is_object($msg))
+            $msg = '[' . gettype($msg) . ' not logged]';
+        else if (is_string($msg) && strlen($msg) > 1500)
+            $msg = '[message of ' . strlen($msg) . ' bytes not logged]';
+        $msg = grace_redact($msg);
+        # Log injection: user-supplied text must not be able to start a fake log line
+        if (is_string($msg))
+            $msg = strtr($msg, array("\r" => '\\r', "\n" => '\\n'));
         # Format the message
         $msg = sprintf("[%s] %s @ %s", $who, date('y-m-d h:m:s', time()), $msg) . "\n";
         //echo "$msg" . ($who == 'a' ? "" : "\n" . "<br />");

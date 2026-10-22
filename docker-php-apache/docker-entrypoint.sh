@@ -3,6 +3,13 @@ set -e
 
 echo "[$(date -u +%d-%m-%Y_%H-%S-%N)][${0}] Starting API Hacienda Configuration"
 
+# Certificate store (the Hacienda .p12 uploads live here). On Railway this path should be a persistent
+# Volume, which is mounted owned by root: give it to Apache's user and keep it private. Without a volume
+# the directory is simply the container's own disk (the certificate is then lost on every redeploy).
+mkdir -p /var/www/api/files
+chown www-data:www-data /var/www/api/files 2>/dev/null || true
+chmod 700 /var/www/api/files 2>/dev/null || true
+
 setUpCryptoKey() {
     SETTINGS_FILE_PATH=/var/www/html/settings.php
     SETTINGS_TEMPLATE_FILE_PATH=/var/www/html/settings_original_docker.php.dist
@@ -45,11 +52,10 @@ setUpCryptoKey() {
 
     # Generate cryptoKey if it's missing
     echo "[$(date -u +%d-%m-%Y_%H-%S-%N)][${0}] Trying to retrieve CryptoKey"
-    CRLIBRE_API_HACIENDA_CRYPTO_KEY_JSON=$(curl -s "http://${LOCALHOSTNAME}:80/api.php?w=crypto&r=makeKey" -o /var/www/html/cryptoKey.json)
-    echo "[$(date -u +%d-%m-%Y_%H-%S-%N)][${0}] Retrieved JSON: ${CRLIBRE_API_HACIENDA_CRYPTO_KEY_JSON}"
+    curl -s "http://${LOCALHOSTNAME}:80/api.php?w=crypto&r=makeKey" -o /var/www/html/cryptoKey.json
     
     CRLIBRE_API_HACIENDA_CRYPTO_KEY=$(cat /var/www/html/cryptoKey.json | awk -F'"' '/"resp"/ {print $4}')
-    echo "[$(date -u +%d-%m-%Y_%H-%S-%N)][${0}] CryptoKey set to: ${CRLIBRE_API_HACIENDA_CRYPTO_KEY}"
+    echo "[$(date -u +%d-%m-%Y_%H-%S-%N)][${0}] CryptoKey generated"
 
     # Replace cryptoKey in settings.php
     sed -i "s/{cryptoKey}/${CRLIBRE_API_HACIENDA_CRYPTO_KEY}/g" "${SETTINGS_FILE_PATH}"

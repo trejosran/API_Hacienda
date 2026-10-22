@@ -1376,7 +1376,7 @@ class XMLSecurityDSig
             // https://bugs.php.net/bug.php?id=77411
             $serialNumber = $certData['serialNumber'];
         } else {
-            $serialNumber = stringHex2StringDec($certData['serialNumber']);
+            $serialNumber = $this->stringHex2StringDec($certData['serialNumber']);
         }
         $certIssuer = [];
         foreach ($certData['issuer'] as $item => $value) {

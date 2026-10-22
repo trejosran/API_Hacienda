@@ -102,7 +102,7 @@ function companny_users_logMeIn($idMasterUser = '') {
         grace_debug("username based login");
         $compannyUser = companny_users_load($idMasterUser, array('userName' => $compannyUserName));
     }
-    grace_debug("### VAlidacion: " . $compannyUser->pwd . " Lo que ingresa" . params_get("pwd"));
+    grace_debug("### VAlidacion de credenciales de usuario de compannia");
 
     if (password_verify(params_get('pwd', ''), $compannyUser->pwd)) {
         // Create a token
@@ -371,6 +371,9 @@ function companny_users_getMyDetails() {
     $idMasterUser = params_get("idMasterUser");
     grace_debug("Getting my details");
         $compannyUser = companny_users_loadByName($idMasterUser, params_get('iam'));
+        # The password hash is never sent back to the client
+        if (is_object($compannyUser))
+            unset($compannyUser->pwd);
         return $compannyUser;
 }
 
@@ -512,7 +515,7 @@ function companny_users_recoverPwd() {
     $temp = rand(0, 1000) + time();
 
     $compannyUser->pwd = password_hash($temp, PASSWORD_DEFAULT);
-    grace_debug("New tmp pwd: " . $compannyUser->pwd);
+    grace_debug("New tmp pwd generated");
 
     # Update account
     if (_companny_users_update((array) $compannyUser, $idMasterUser)) {
@@ -546,7 +549,7 @@ function companny_users_logMeOut() {
  */
 function companny_users_confirmSessionValidity() {
 
-    grace_debug("I will confirm the validity of this session: " . params_get('iam', '') . " -- " . params_get('sessionKey', ''));
+    grace_debug("I will confirm the validity of this session: " . params_get('iam', ''));
 
     # If I got here I am logged in :)
     return SUCCESS_ALL_GOOD;
@@ -562,7 +565,7 @@ function _companny_users_update($dets, $idMasterUser) {
     } else {
         $dets['pwd'] = "'" . $dets['pwd'] . "'";
     }
-    grace_debug("####->" . $newDets['pwd']);
+    grace_debug("####-> pwd update requested");
 
     # Merge the current information about the user and the new information provided
     $newDets = array_replace((array) $user, $dets);

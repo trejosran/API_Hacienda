@@ -85,8 +85,9 @@ function users_init()
         array(
             'r'             => 'users_register',
             'action'        => 'users_registerNew',
-            'access'        => 'users_openAccess',
+            'access'        => 'users_registrationAllowed',
             'params'        => array(
+                array("key" => "registerToken", "def" => "", "req" => false),
                 array("key" => "fullName",      "def" => "", "req" => true),
                 array("key" => "userName",      "def" => "", "req" => true),
                 array("key" => "email",         "def" => "", "req" => true),
@@ -253,6 +254,22 @@ function users_noAccess()
     return false;
 }
 
+/**
+ * Registration gate (users_register used to be open to anyone on the Internet).
+ * Registration works only while the deployment defines the secret variable `registerToken` AND the
+ * caller sends the same value (parameter registerToken). With the variable unset registration is
+ * closed. The ERP never registers users at runtime (it only logs in), so the owner sets the token
+ * once to create the ERP's API user and then removes it.
+ */
+function users_registrationAllowed()
+{
+    $token = conf_get('registerToken', 'users', '');
+    if (!is_string($token) || $token === '')
+        return false;
+
+    return hash_equals($token, (string) params_get('registerToken', ''));
+}
+
 function users_loggedIn()
 {
     global $user;
@@ -396,8 +413,8 @@ function users_generateSessionKey($idUser)
  */
 function users_hash($pwd)
 {
-    // Turn off all error reporting
-    error_reporting(0);
+    // Silence reporting only while hashing; the previous level is restored below
+    $previousLevel = error_reporting(0);
     modules_loader("crypto", "crypto.php");
     $salt;
     if (version_compare(PHP_VERSION, '7.0', '<'))
@@ -418,6 +435,7 @@ function users_hash($pwd)
 
     $hashPass = password_hash($pwd, PASSWORD_BCRYPT, $options);
     $rsp = base64_encode(crypto_encrypt($hashPass));
+    error_reporting($previousLevel);
     return $rsp;
 }
 
@@ -672,6 +690,9 @@ function users_getMyDetails()
     grace_debug("Getting my details");
 
     $user = users_loadByName(params_get('iam'));
+    # The stored (encrypted) password hash is never sent back to the client
+    if (is_object($user))
+        unset($user->pwd);
     return $user;
 }
 
@@ -814,7 +835,7 @@ function users_recoverPwd()
     $temp = rand(0, 1000) + time();
     $user->pwd = users_hash($temp);
 
-    grace_debug("New tmp pwd: " . $user->pwd);
+    grace_debug("New tmp pwd generated");
 
     # Update account
     if (_users_update((array) $user))
@@ -840,7 +861,7 @@ function users_recoverPwd()
  */
 function users_confirmSessionValidity()
 {
-    grace_debug("I will confirm the validity of this session: " . params_get('iam', '') . " -- " . params_get('sessionKey', ''));
+    grace_debug("I will confirm the validity of this session: " . params_get('iam', ''));
 
     # If I got here I am logged in :)
     return SUCCESS_ALL_GOOD;

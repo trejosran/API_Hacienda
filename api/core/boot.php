@@ -51,8 +51,12 @@ function boot_itUp($mode = 'web')
 {
     grace_debug("Booting up");
 
+    # boot alert=false used to switch error reporting off entirely, which also
+    # hid real failures from the log. Errors are never displayed (display_errors
+    # is Off), so keep reporting them to the log; deprecation notices are
+    # skipped to avoid noise.
     if (conf_get('alert', 'boot') == 'false')
-        error_reporting(0); // Turn off all error reporting
+        error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
     # Load all core modules
     # @todo Call the current requested module first in case it wants to change the core modules to be loaded

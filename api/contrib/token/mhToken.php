@@ -83,7 +83,7 @@ function token()
     $data = http_build_query($data);
     //$data = rtrim($data, '&');
     curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-    grace_debug("JSON: ".$data);
+    grace_debug("Token request sent (credentials not logged)");
 
     $respuesta  = curl_exec($curl);
     $status     = curl_getinfo($curl, CURLINFO_HTTP_CODE);
