@@ -498,7 +498,7 @@ CREATE TABLE `sessions` (
   `idSession` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `idUser` int(11) unsigned NOT NULL,
   `sessionKey` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
   `lastAccess` int(10) unsigned NOT NULL,
   PRIMARY KEY (`idSession`),
   KEY `key` (`sessionKey`(191)),
